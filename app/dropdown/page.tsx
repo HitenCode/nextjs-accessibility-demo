@@ -7,9 +7,19 @@ export default function DropdownBug() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   function handleBlur(e: React.FocusEvent) {
-    // ❌ BUG: closes instantly even when TAB moves to next option
-    setOpen(false);
+  const next = e.relatedTarget as HTMLElement | null;
+
+  // ✔️ FIX: only close if focus moves OUTSIDE the dropdown
+  if (dropdownRef.current?.contains(next)) {
+    return;
   }
+
+  // ✔️ FIX: slight delay so TAB key navigation settles
+  setTimeout(() => {
+    setOpen(false);
+  }, 50);
+}
+
 
   return (
     <div className="p-10">
